@@ -25,6 +25,30 @@ const daysLeft = getRemainingDates(now.getDate());
 // const min = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
 // const sec = Math.floor((remainingTime % (60 * 1000)) / 1000);
 
+const getWorkDays = (
+  date: string | number,
+  total: Array<string> = []
+): Array<string> => {
+  const startDate = new Date(date);
+  const nextDate = startDate.getTime() + 24 * 60 * 60 * 1000;
+  const now = new Date();
+
+  if (
+    startDate.getTime() ===
+    new Date(
+      `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`
+    ).getTime()
+  ) {
+    return total;
+  } else if (startDate.getDay() === 0 || startDate.getDay() === 6) {
+    return getWorkDays(nextDate, total);
+  }
+
+  return getWorkDays(nextDate, [startDate.toDateString(), ...total]);
+};
+
+const totalWorkingDays = getWorkDays('2024/02/05');
+
 function App() {
   return (
     <>
@@ -50,6 +74,19 @@ function App() {
             to={new Date().getTime() + remainingTime}
             renderMap={[false, true, true, true]}
           />
+        </div>
+
+        <div style={{ marginTop: '20%' }}>
+          {totalWorkingDays.map((e, i) => (
+            <div>
+              {totalWorkingDays.length - i}
+              {'.) '}
+              {e}
+              {' - '}
+              {(totalWorkingDays.length - i) * 8}
+              {'hrs'}
+            </div>
+          ))}
         </div>
       </div>
     </>
