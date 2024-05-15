@@ -2,7 +2,7 @@ import FlipClockCountdown from '@leenguyen/react-flip-clock-countdown';
 import '@leenguyen/react-flip-clock-countdown/dist/index.css';
 
 const getRemainingDates = (date: number, total = 0): number => {
-  if (date >= 28) {
+  if (date >= 32) {
     return total;
   }
 
