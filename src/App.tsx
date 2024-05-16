@@ -1,53 +1,66 @@
 import FlipClockCountdown from '@leenguyen/react-flip-clock-countdown';
 import '@leenguyen/react-flip-clock-countdown/dist/index.css';
 
-const getRemainingDates = (date: number, total = 0): number => {
-  if (date >= 32) {
-    return total;
-  }
-
-  const newDate = new Date(2024, 4, date);
-
-  return getRemainingDates(
-    date + 1,
-    newDate.getDay() !== 0 && newDate.getDay() !== 6 ? total + 1 : total
-  );
-};
-
-// const end = new Date('2024-04-31');
+const nowStart = new Date(new Date().setHours(8, 0, 0, 0));
 const now = new Date();
 const nowEnd = new Date(new Date().setHours(16, 0, 0, 0));
 const remainingTime = nowEnd.getTime() - now.getTime();
-
-const daysLeft = getRemainingDates(now.getDate());
 
 // const Hour = Math.floor(remainingTime / (60 * 60 * 1000));
 // const min = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
 // const sec = Math.floor((remainingTime % (60 * 1000)) / 1000);
 
-const getWorkDays = (
+const daysNotIncluded = [
+  '2024/04/25',
+  '2024/04/01',
+  '2024/03/29',
+  '2024/03/28',
+].map((e) => new Date(e).toDateString());
+
+const getTotalWorkDays = (
   date: string | number,
   total: Array<string> = []
 ): Array<string> => {
   const startDate = new Date(date);
   const nextDate = startDate.getTime() + 24 * 60 * 60 * 1000;
+
+  if (total.length * 8 >= 600) {
+    return total;
+  } else if (
+    startDate.getDay() === 0 ||
+    startDate.getDay() === 6 ||
+    daysNotIncluded.includes(startDate.toDateString())
+  ) {
+    return getTotalWorkDays(nextDate, total);
+  }
+
+  return getTotalWorkDays(nextDate, [startDate.toDateString(), ...total]);
+};
+
+const totalWorkingDays = getTotalWorkDays('2024/02/05');
+const totalWorkedDays = getTotalWorkDays('2024/02/05').filter((e) => {
   const now = new Date();
 
-  if (
-    startDate.getTime() ===
+  return (
+    new Date(e).getTime() <
     new Date(
       `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`
     ).getTime()
-  ) {
-    return total;
-  } else if (startDate.getDay() === 0 || startDate.getDay() === 6) {
-    return getWorkDays(nextDate, total);
+  );
+});
+
+const daysLeft = totalWorkingDays.length - totalWorkedDays.length;
+
+const getAccountedHours = () => {
+  if (nowStart.getTime() >= now.getTime()) {
+    return totalWorkedDays.length * 8;
+  } else if (now.getTime() <= nowEnd.getTime()) {
+    return (
+      totalWorkedDays.length * 8 + Math.trunc(remainingTime / (60 * 60 * 1000))
+    );
   }
-
-  return getWorkDays(nextDate, [startDate.toDateString(), ...total]);
+  return totalWorkedDays.length * 8 + 8;
 };
-
-const totalWorkingDays = getWorkDays('2024/02/05');
 
 function App() {
   return (
@@ -69,21 +82,39 @@ function App() {
             renderMap={[true, false, false, false]}
           />
         </div>
-        <div>
-          <FlipClockCountdown
-            to={new Date().getTime() + remainingTime}
-            renderMap={[false, true, true, true]}
-          />
-        </div>
-
+        {now.getTime() >= nowStart.getTime() && (
+          <div>
+            <FlipClockCountdown
+              to={new Date().getTime() + remainingTime}
+              renderMap={[false, true, true, true]}
+            />
+          </div>
+        )}
         <div style={{ marginTop: '20%' }}>
-          {totalWorkingDays.map((e, i) => (
-            <div>
-              {totalWorkingDays.length - i}
+          Prospected End Date: {totalWorkingDays[0]}
+        </div>
+        <div style={{ marginTop: '5px' }}>
+          Total Accounted Hours: {getAccountedHours()}hrs
+        </div>
+        <div style={{ marginTop: '15%' }}>NO WORK DAYS:</div>
+        <div style={{ marginTop: '5px' }}>
+          {daysNotIncluded.map((e, i) => (
+            <div key={i}>
+              {daysNotIncluded.length - i}
+              {'.) '}
+              {e}
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '20%' }}>WORK DAYS:</div>
+        <div style={{ marginTop: '5px' }}>
+          {totalWorkedDays.map((e, i) => (
+            <div key={i}>
+              {totalWorkedDays.length - i}
               {'.) '}
               {e}
               {' - '}
-              {(totalWorkingDays.length - i) * 8}
+              {(totalWorkedDays.length - i) * 8}
               {'hrs'}
             </div>
           ))}
