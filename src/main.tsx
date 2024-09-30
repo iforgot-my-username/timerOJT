@@ -9,7 +9,7 @@ import Gia from './pages/Gia.tsx';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: <Gia />,
   },
   {
     path: '/gia',
