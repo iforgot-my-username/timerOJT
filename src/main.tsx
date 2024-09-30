@@ -15,6 +15,10 @@ const router = createBrowserRouter([
     path: '/gia',
     element: <Gia />,
   },
+  {
+    path: '/goodmorning',
+    element: <Gia />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
