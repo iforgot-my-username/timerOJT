@@ -14,15 +14,24 @@ const Gia = () => {
       }}
     >
       <Typography>GOOD MORNING</Typography>
+      <Box>
+        <h1>T boss ka puli kana??? </h1>
+      </Box>
       <Box sx={{ paddingTop: buttonPD }}>
         <Button
           onClick={() => {
             setButtonPd((prev) => (prev > 10 ? prev - 10 : prev + 10));
           }}
         >
-          CLICK
+          yes?
         </Button>
       </Box>
+
+      {buttonPD == 1 && (
+        <Box>
+          <h1>Goods</h1>
+        </Box>
+      )}
     </Container>
   );
 };
