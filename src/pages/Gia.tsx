@@ -27,7 +27,7 @@ const Gia = () => {
         </Button>
       </Box>
 
-      {buttonPD == 1 && (
+      {buttonPD !== 1 && (
         <Box>
           <h1>Goods</h1>
         </Box>
